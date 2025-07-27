@@ -38,24 +38,40 @@ curl -X POST "http://localhost:8081/predict" \
     "rooms": 2
   }
 }'
-
 ```
 Ожидаемый ответ: `{"prediction":11868424.11}`
 
 ## 2. FastAPI микросервис в Docker-контейнере
-
+### Сборка образа
 ```bash
-# команда перехода в нужную директорию
-
-# команда для запуска микросервиса в режиме docker compose
+docker image build . -t predictor:latest
 ```
+### Запуск контейнера
+```bash
+docker container run -p 8081:8081 --env-file .env predictor:latest
+```
+Swagger: `http://localhost:8081/docs`
 
 ### Пример curl-запроса к микросервису
 
 ```bash
-curl -X 'POST' \
-  'http://localhost:...' \
+curl -X POST "http://localhost:8081/predict" \
+-H "Content-Type: application/json" \
+-d '{
+  "model_params": {
+    "build_year": 2005,
+    "building_age": 20,
+    "floor": 5,
+    "high_ceiling_flag": 1,
+    "is_central": 0,
+    "kitchen_area**3": 14,
+    "latitude": 55.53,
+    "longitude": 37.508,
+    "rooms": 2
+  }
+}'
 ```
+Ожидаемый ответ: `{"prediction":11868424.11}`
 
 ## 3. Docker compose для микросервиса и системы моониторинга
 
