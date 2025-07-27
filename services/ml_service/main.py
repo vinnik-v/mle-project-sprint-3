@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Dict
+from prometheus_fastapi_instrumentator import Instrumentator
 import joblib
 
 # Модель запроса
@@ -48,6 +49,8 @@ app = FastAPI(
 )
 
 handler = FastApiHandler()
+
+Instrumentator().instrument(app).expose(app)
 
 @app.post(
     "/predict",

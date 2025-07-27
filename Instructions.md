@@ -74,19 +74,42 @@ curl -X POST "http://localhost:8081/predict" \
 Ожидаемый ответ: `{"prediction":11868424.11}`
 
 ## 3. Docker compose для микросервиса и системы моониторинга
-
+### Сборка и запуск
 ```bash
-# команда перехода в нужную директорию
-
-# команда для запуска микросервиса в режиме docker compose
-
+docker compose up --build
 ```
+
+### Адреса после запуска:
+
+- Микросервис: `http://localhost:8081/docs`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000` (логин/пароль: admin/admin)
+- Метрики: `http://localhost:8081/metrics`
 
 ### Пример curl-запроса к микросервису
 
 ```bash
-curl -X 'POST' \
-  'http://localhost:
+curl -X POST "http://localhost:8081/predict" \
+-H "Content-Type: application/json" \
+-d '{
+  "model_params": {
+    "build_year": 2005,
+    "building_age": 20,
+    "floor": 5,
+    "high_ceiling_flag": 1,
+    "is_central": 0,
+    "kitchen_area**3": 14,
+    "latitude": 55.53,
+    "longitude": 37.508,
+    "rooms": 2
+  }
+}'
+```
+Ожидаемый ответ: `{"prediction":11868424.11}`
+
+#### Выгрузка метрик
+```bash
+curl -X GET "http://localhost:8081/metrics"
 ```
 
 ## 4. Скрипт симуляции нагрузки
