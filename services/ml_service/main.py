@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Dict
 from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import Counter, Histogram
 import joblib
 
 # Модель запроса
@@ -50,7 +51,22 @@ app = FastAPI(
 
 handler = FastApiHandler()
 
-Instrumentator().instrument(app).expose(app)
+# Экспортер метрик
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
+
+# Счётчик запросов
+prediction_requests_total = Counter(
+    "prediction_requests_total",
+    "Общее количество запросов"
+)
+
+# Гистограмма предсказаний
+prediction_values_histogram = Histogram(
+    "prediction_values_histogram",
+    "Гистограмма прогнозируемых значений",
+    buckets=(1e6, 5e6, 1e7, 1.5e7, 2e7, 2.5e7, 3e7, 5e7)
+)
 
 @app.post(
     "/predict",
@@ -60,6 +76,8 @@ Instrumentator().instrument(app).expose(app)
 def predict_price(request: PredictionRequest):
     if not handler.validate_params(request.model_params):
         raise HTTPException(status_code=400, detail="Ошибка в параметрах запроса")
-
+    
+    prediction_requests_total.inc()  # увеличиваем счётчик
     prediction = handler.predict(request.model_params)
+    prediction_values_histogram.observe(prediction)  # записываем в гистограмму
     return {"prediction": prediction}

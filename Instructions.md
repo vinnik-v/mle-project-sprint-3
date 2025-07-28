@@ -113,14 +113,16 @@ curl -X GET "http://localhost:8081/metrics"
 ```
 
 ## 4. Скрипт симуляции нагрузки
-Скрипт генерирует <...> запросов в течение <...> секунд ...
+Расположение скрипта: `/services/scripts/load_simulator.py`
+Скрипт генерирует 100 запросов в течение примерно 50 секунд.
 
-```
 # команды необходимые для запуска скрипта
-...
+```bash
+python ./scripts/load_simulator.py 
 ```
 
 Адреса сервисов:
-- микросервис: http://localhost:<port>
-- Prometheus: ...
-- Grafana: ...
+- Микросервис: `http://localhost:8081/docs`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000` (логин/пароль: admin/admin)
+- Метрики: `http://localhost:8081/metrics`
